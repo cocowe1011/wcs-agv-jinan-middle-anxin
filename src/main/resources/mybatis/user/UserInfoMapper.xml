@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.middle.ccs.user.dao.UserInfoMapper">
-    <select id="selectUserList" resultType="com.middle.ccs.user.entity.UserInfo" parameterType="com.middle.ccs.user.entity.UserInfo">
+<mapper namespace="com.middle.wcs.user.dao.UserInfoMapper">
+    <select id="selectUserList" resultType="com.middle.wcs.user.entity.UserInfo" parameterType="com.middle.wcs.user.entity.UserInfo">
         select user_code, user_password, user_name from user_info where user_code = #{userCode}
     </select>
-    <update id="updatePassword" parameterType="com.middle.ccs.user.entity.UserInfo">
+    <update id="updatePassword" parameterType="com.middle.wcs.user.entity.UserInfo">
         UPDATE user_info set user_password = #{userPassword} where user_code = #{userCode}
     </update>
 </mapper>

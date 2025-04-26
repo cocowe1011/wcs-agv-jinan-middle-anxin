@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.middle.ccs.config.dao.CssConfigMapper">
-<select id="getConfig" resultType="com.middle.ccs.config.entity.CssConfig">
+<mapper namespace="com.middle.wcs.config.dao.CssConfigMapper">
+<select id="getConfig" resultType="com.middle.wcs.config.entity.CssConfig">
     SELECT
         TOP 1
         css_config.config_id,
