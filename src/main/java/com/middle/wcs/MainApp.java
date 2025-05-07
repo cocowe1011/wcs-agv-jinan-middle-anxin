@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication
 @Slf4j
-@MapperScan("com.middle.ccs.*.dao")
+@MapperScan("com.middle.wcs.*.dao")
 @EnableScheduling
 public class MainApp{
     public static void main(String[] args) {

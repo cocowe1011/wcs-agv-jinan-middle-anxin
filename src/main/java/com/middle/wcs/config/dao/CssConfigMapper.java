@@ -11,7 +11,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface CssConfigMapper extends BaseMapper<CssConfig> {
-
-
     CssConfig getConfig();
 }

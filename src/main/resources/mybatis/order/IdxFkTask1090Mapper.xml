@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.middle.wcs.order.dao.IdxFkTask1090Mapper">
+
+    <resultMap type="com.middle.wcs.order.entity.po.IdxFkTask1090" id="IdxFkTask1090Map">
+        <result property="uuid" column="UUID" jdbcType="INTEGER"/>
+        <result property="sku" column="SKU" jdbcType="VARCHAR"/>
+        <result property="descrC" column="DESCR_C" jdbcType="VARCHAR"/>
+        <result property="lotatt01" column="LOTATT01" jdbcType="VARCHAR"/>
+        <result property="lotatt02" column="LOTATT02" jdbcType="VARCHAR"/>
+        <result property="column3" column="COLUMN3" jdbcType="VARCHAR"/>
+        <result property="column4" column="COLUMN4" jdbcType="VARCHAR"/>
+        <result property="column5" column="COLUMN5" jdbcType="VARCHAR"/>
+        <result property="column6" column="COLUMN6" jdbcType="VARCHAR"/>
+        <result property="column7" column="COLUMN7" jdbcType="VARCHAR"/>
+        <result property="column8" column="COLUMN8" jdbcType="VARCHAR"/>
+        <result property="type" column="TYPE" jdbcType="VARCHAR"/>
+        <result property="traceid" column="TRACEID" jdbcType="VARCHAR"/>
+        <result property="column1" column="COLUMN1" jdbcType="TIMESTAMP"/>
+        <result property="mudidi" column="MUDIDI" jdbcType="VARCHAR"/>
+        <result property="zt" column="ZT" jdbcType="VARCHAR"/>
+        <result property="cheijian" column="CHEIJIAN" jdbcType="VARCHAR"/>
+        <result property="column9" column="COLUMN9" jdbcType="VARCHAR"/>
+        <result property="column11" column="COLUMN11" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    
+
+</mapper>

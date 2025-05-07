@@ -22,14 +22,14 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.middle.ccs.order.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.middle.wcs.order.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("CCS消毒中台API文档")
+                .title("安信接口")
                 .description("API接口文档")
                 .contact(new Contact("开发团队", "", ""))
                 .version("1.0")
