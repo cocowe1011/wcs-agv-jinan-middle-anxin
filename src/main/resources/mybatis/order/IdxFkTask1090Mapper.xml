@@ -19,7 +19,7 @@
         <result property="column1" column="COLUMN1" jdbcType="TIMESTAMP"/>
         <result property="mudidi" column="MUDIDI" jdbcType="VARCHAR"/>
         <result property="zt" column="ZT" jdbcType="VARCHAR"/>
-        <result property="cheijian" column="CHEIJIAN" jdbcType="VARCHAR"/>
+        <result property="chejian" column="CHEJIAN" jdbcType="VARCHAR"/>
         <result property="column9" column="COLUMN9" jdbcType="VARCHAR"/>
         <result property="column11" column="COLUMN11" jdbcType="VARCHAR"/>
     </resultMap>

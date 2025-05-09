@@ -98,7 +98,7 @@ public class IdxFkTask1090 {
     /**
     * 车间
     */
-    private String cheijian;
+    private String chejian;
 
     /**
     * 生产厂家批号
