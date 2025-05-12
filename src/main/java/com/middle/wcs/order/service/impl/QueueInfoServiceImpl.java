@@ -63,6 +63,7 @@ public class QueueInfoServiceImpl implements QueueInfoService {
         queueInfo.setTrayStatus("");
         queueInfo.setRobotTaskCode("");
         queueInfo.setTrayInfoAdd("");
+        queueInfo.setTargetPosition("");
         int i = this.queueInfoMapper.updateById(queueInfo);
         if (i == 0) {
             throw new RuntimeException("清空队列信息失败");
@@ -74,7 +75,13 @@ public class QueueInfoServiceImpl implements QueueInfoService {
         queueInfoForInsert.setTrayStatus(dto.getTrayStatus());
         queueInfoForInsert.setRobotTaskCode(dto.getRobotTaskCode());
         queueInfoForInsert.setTrayInfoAdd(dto.getTrayInfoAdd());
+        queueInfoForInsert.setTargetPosition(dto.getTargetPosition());
         return this.queueInfoMapper.insert(queueInfoForInsert);
+    }
+
+    @Override
+    public int delete(QueueInfo dto) {
+        return this.queueInfoMapper.deleteById(dto);
     }
 
 }

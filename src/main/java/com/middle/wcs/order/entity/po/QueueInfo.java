@@ -3,6 +3,8 @@ package com.middle.wcs.order.entity.po;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.util.Date;
@@ -17,6 +19,7 @@ import java.util.Date;
 @TableName("queue_info")
 public class QueueInfo {
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -60,4 +63,9 @@ public class QueueInfo {
      * 托盘详细信息
      */
     private String trayInfoAdd;
+
+    /**
+     * target_position 从缓存区发送到哪个目的地
+     */
+    private String targetPosition;
 }

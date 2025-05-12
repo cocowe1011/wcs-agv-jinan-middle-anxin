@@ -65,4 +65,15 @@ public class QueueInfoController {
         return ResponseResult.success(this.queueInfoService.updateAgv22(dto));
     }
 
+    /**
+     * 删除
+     *
+     * @param  dto
+     */
+    @ApiOperation("更新")
+    @PostMapping("/delete")
+    public ResponseResult<Integer> delete(@ApiParam(value = "信息",required = true) @RequestBody QueueInfo dto) {
+        return ResponseResult.success(this.queueInfoService.delete(dto));
+    }
+
 }
