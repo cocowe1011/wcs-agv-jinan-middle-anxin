@@ -41,7 +41,23 @@ public class QueueInfo {
     private String queueNum;
 
     /**
-     * tray_status 托盘状态 状态，''无托盘，0AGV送货执行中，1AGV送货已完成，2缓存区到目的地执行中
+     * tray_status 托盘状态 状态，''无托盘
+     * 0-在2800等待AGV取货
+     * 1-已在2800取货，正往缓存区运送
+     * 2-已送至2楼缓存区
+     * 3-在缓存区等待AGV取货
+     * 4-已在缓存区取货，正往运往目的地
+     * 5-已送至2楼目的地
      */
     private String trayStatus;
+
+    /**
+     * 给AGV下发命令后返回的任务号，用于查询当前托盘运送状态
+     */
+    private String robotTaskCode;
+
+    /**
+     * 托盘详细信息
+     */
+    private String trayInfoAdd;
 }

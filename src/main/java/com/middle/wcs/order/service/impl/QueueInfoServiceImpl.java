@@ -5,6 +5,7 @@ import com.middle.wcs.order.dao.QueueInfoMapper;
 import com.middle.wcs.order.entity.po.QueueInfo;
 import com.middle.wcs.order.service.QueueInfoService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -44,6 +45,36 @@ public class QueueInfoServiceImpl implements QueueInfoService {
     @Override
     public QueueInfo getQueueInfoById(Long id) {
         return queueInfoMapper.selectById(id);
+    }
+
+    /**
+     * 处理AGV2-2队列的数据
+     *
+     * @param dto 实例对象
+     * @return 实例对象
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateAgv22(QueueInfo dto) {
+        // 1、先把当前队列信息清空
+        QueueInfo queueInfo = new QueueInfo();
+        queueInfo.setId(dto.getId());
+        queueInfo.setTrayInfo("");
+        queueInfo.setTrayStatus("");
+        queueInfo.setRobotTaskCode("");
+        queueInfo.setTrayInfoAdd("");
+        int i = this.queueInfoMapper.updateById(queueInfo);
+        if (i == 0) {
+            throw new RuntimeException("清空队列信息失败");
+        }
+        // 2、插入队列信息
+        QueueInfo queueInfoForInsert = new QueueInfo();
+        queueInfoForInsert.setQueueName("AGV2-2");
+        queueInfoForInsert.setTrayInfo(dto.getTrayInfo());
+        queueInfoForInsert.setTrayStatus(dto.getTrayStatus());
+        queueInfoForInsert.setRobotTaskCode(dto.getRobotTaskCode());
+        queueInfoForInsert.setTrayInfoAdd(dto.getTrayInfoAdd());
+        return this.queueInfoMapper.insert(queueInfoForInsert);
     }
 
 }

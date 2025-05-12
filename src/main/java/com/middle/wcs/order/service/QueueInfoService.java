@@ -31,4 +31,12 @@ public interface QueueInfoService {
     List<QueueInfo> queryQueueList(QueueInfo dto);
 
     QueueInfo getQueueInfoById(Long id);
+
+    /**
+     * 修改数据
+     *
+     * @param dto 实例对象
+     * @return 成功为1，失败为0
+     */
+    int updateAgv22(QueueInfo dto);
 }
