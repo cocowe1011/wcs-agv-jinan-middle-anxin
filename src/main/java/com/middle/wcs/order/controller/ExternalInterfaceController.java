@@ -97,6 +97,6 @@ public class ExternalInterfaceController {
         }
         TaskVO taskVO = new TaskVO();
         taskVO.setRobotTaskCode(dto.getRobotTaskCode());
-        return ResponseResult.success(taskVO);
+        return ResponseResult.successWithCode0(taskVO);
     }
 }

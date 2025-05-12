@@ -63,6 +63,17 @@ public class ResponseResult<T> implements Serializable {
         return build(data, ResultCodeEnum.SUCCESS);
     }
 
+    /**
+     * 操作成功
+     * @param data  baseCategory1List
+     * @param <T>
+     * @return
+     */
+    public static<T> ResponseResult<T> successWithCode0(T data){
+        ResponseResult<T> result = build(data);
+        return build(data, ResultCodeEnum.SUCCESS_WITH_CODE_0);
+    }
+
     public static<T> ResponseResult<T> fail(){
         return ResponseResult.fail(null);
     }
