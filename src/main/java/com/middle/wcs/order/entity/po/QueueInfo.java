@@ -51,6 +51,7 @@ public class QueueInfo {
      * 3-在缓存区等待AGV取货
      * 4-已在缓存区取货，正往运往目的地
      * 5-已送至2楼目的地
+     * 6-等待一楼AGV取货
      */
     private String trayStatus;
 

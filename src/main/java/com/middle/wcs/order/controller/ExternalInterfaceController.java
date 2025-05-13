@@ -43,7 +43,9 @@ public class ExternalInterfaceController {
         List<QueueInfo> lqi = this.queueInfoService.queryQueueList(queueInfo);
         // 判断lqi是否为空
         if (lqi == null || lqi.isEmpty()) {
-            throw new RuntimeException("任务编号不存在");
+            TaskVO taskVO = new TaskVO();
+            taskVO.setRobotTaskCode(dto.getRobotTaskCode());
+            return ResponseResult.successWithCode0(taskVO);
         }
         log.info("对外开放接口-任务执行过程回馈接口查询到的托盘信息：{}", lqi);
         // 看看AGV当前状态 默认使用方式:
@@ -72,8 +74,11 @@ public class ExternalInterfaceController {
                     log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为4:{}", dto.getRobotTaskCode());
                     queueInfoForUpdate.setTrayStatus("4");
                     this.queueInfoService.update(queueInfoForUpdate);
+                } else if("6".equals(lqi.get(0).getTrayStatus())) {
+                    log.info("对外开放接口-一楼AGV小车已经取到货物，在原队列删除:{}", dto.getRobotTaskCode());
+                    this.queueInfoService.delete(queueInfoForUpdate);
                 } else {
-                    throw new RuntimeException("托盘状态不正确");
+                    log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
                 break;
             case "end":
@@ -89,11 +94,12 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayStatus("5");
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else {
-                    throw new RuntimeException("托盘状态不正确");
+                    log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
                 break;
             default:
-                throw new RuntimeException("未知的任务状态");
+                log.info("对外开放接口-未知的任务状态:{}", dto.getRobotTaskCode());
+                break;
         }
         TaskVO taskVO = new TaskVO();
         taskVO.setRobotTaskCode(dto.getRobotTaskCode());

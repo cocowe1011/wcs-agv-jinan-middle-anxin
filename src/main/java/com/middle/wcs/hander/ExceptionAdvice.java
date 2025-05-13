@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 
 /**
  * @classDesc: 功能描述:(业务异常-需要捕获并处理为error，需要业务方关心的异常)
@@ -51,6 +54,34 @@ public class ExceptionAdvice {
         }
         return (BusinessException) throwable;
     }
+    
+    /**
+     * 处理内存溢出异常
+     *
+     * @param request
+     * @param e
+     * @return
+     */
+    @ExceptionHandler(value = OutOfMemoryError.class)
+    public ResponseResult handleOutOfMemoryError(HttpServletRequest request, OutOfMemoryError e) {
+        // 记录详细的内存信息
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
+        
+        log.error("内存溢出异常！堆内存使用情况：{}/{} MB，非堆内存使用情况：{}/{} MB", 
+                heapMemoryUsage.getUsed() / 1024 / 1024, 
+                heapMemoryUsage.getMax() / 1024 / 1024,
+                nonHeapMemoryUsage.getUsed() / 1024 / 1024, 
+                nonHeapMemoryUsage.getMax() / 1024 / 1024);
+        
+        log.error("内存溢出异常 stack info={}", getExceptionStack(e));
+        
+        ResponseResult result = new ResponseResult();
+        result.setMessage("系统内存不足，请联系管理员");
+        result.setCode("500");
+        return result;
+    }
 
 
     /**
@@ -66,7 +97,7 @@ public class ExceptionAdvice {
         if (businessException != null) {
             return handleBusinessException(request, businessException);
         }
-        log.error("通用异常stack info={}",getExceptionStack(e));
+        log.error("通用异常stack info={}", getExceptionStack(e));
         ResponseResult result = new ResponseResult();
         result.setMessage(e.getMessage());
         return result;
