@@ -41,4 +41,11 @@ public interface QueueInfoService {
     int updateAgv22(QueueInfo dto);
 
     int delete(QueueInfo dto);
+
+    /**
+     * 批量更新
+     *
+     * @param  dto
+     */
+    int updateByList(List<QueueInfo> dto);
 }

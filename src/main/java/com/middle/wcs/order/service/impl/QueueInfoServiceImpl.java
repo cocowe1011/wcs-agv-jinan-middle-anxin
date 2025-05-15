@@ -84,4 +84,14 @@ public class QueueInfoServiceImpl implements QueueInfoService {
         return this.queueInfoMapper.deleteById(dto);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateByList(List<QueueInfo> dto) {
+        // 批量更新
+        for (QueueInfo queueInfo : dto) {
+            this.queueInfoMapper.updateById(queueInfo);
+        }
+        return 1;
+    }
+
 }

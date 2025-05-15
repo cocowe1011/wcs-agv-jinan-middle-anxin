@@ -39,6 +39,17 @@ public class QueueInfoController {
     }
 
     /**
+     * 批量更新
+     *
+     * @param  dto
+     */
+    @ApiOperation("批量更新")
+    @PostMapping("/updateByList")
+    public ResponseResult<Integer> updateByList(@ApiParam(value = "信息",required = true) @RequestBody List<QueueInfo> dto) {
+        return ResponseResult.success(this.queueInfoService.updateByList(dto));
+    }
+
+    /**
      * 查询队列信息列表
      * @return 出参
      */

@@ -75,8 +75,9 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayStatus("4");
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else if("6".equals(lqi.get(0).getTrayStatus())) {
-                    log.info("对外开放接口-一楼AGV小车已经取到货物，在原队列删除:{}", dto.getRobotTaskCode());
-                    this.queueInfoService.delete(queueInfoForUpdate);
+                    log.info("对外开放接口-一楼AGV小车已经取到货物，更新托盘状态为7:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayStatus("7");
+                    this.queueInfoService.update(queueInfoForUpdate);
                 } else {
                     log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
@@ -96,6 +97,9 @@ public class ExternalInterfaceController {
                 } else {
                     log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
+                break;
+            case "cancel":
+                // 说明任务取消了，把托盘状态恢复回去
                 break;
             default:
                 log.info("对外开放接口-未知的任务状态:{}", dto.getRobotTaskCode());
