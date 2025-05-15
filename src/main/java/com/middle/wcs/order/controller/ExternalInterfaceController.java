@@ -79,7 +79,7 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayStatus("7");
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else {
-                    log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
+                    log.info("outbin状态方法-托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
                 break;
             case "end":
@@ -95,11 +95,36 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayStatus("5");
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else {
-                    log.info("托盘状态不正确:{}", dto.getRobotTaskCode());
+                    log.info("end状态方法-托盘状态不正确:{}", dto.getRobotTaskCode());
                 }
                 break;
             case "cancel":
                 // 说明任务取消了，把托盘状态恢复回去
+                if ("0".equals(lqi.get(0).getTrayStatus()) || "1".equals(lqi.get(0).getTrayStatus())) {
+                    // 说明在2800取货后取消了，直接把这个托盘在队列中删除
+                    log.info("对外开放接口-任务执行过程回馈接口收到取消命令，直接删除托盘信息:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayInfo("");
+                    queueInfoForUpdate.setTrayStatus("");
+                    queueInfoForUpdate.setRobotTaskCode("");
+                    queueInfoForUpdate.setTrayInfoAdd("");
+                    queueInfoForUpdate.setTargetPosition("");
+                    queueInfoForUpdate.setIsWaitCancel("");
+                    this.queueInfoService.update(queueInfoForUpdate);
+                } else if("3".equals(lqi.get(0).getTrayStatus()) || "4".equals(lqi.get(0).getTrayStatus())) {
+                    // 说明在缓存区取货后取消了，把托盘状态更新为2-已送至2楼缓存区
+                    log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为2:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayStatus("2");
+                    queueInfoForUpdate.setIsWaitCancel("");
+                    this.queueInfoService.update(queueInfoForUpdate);
+                } else if ("6".equals(lqi.get(0).getTrayStatus()) || "7".equals(lqi.get(0).getTrayStatus())) {
+                    // 说明在一楼AGV取货后取消了，把托盘状态更新为2-已送至2楼缓存区
+                    log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为5:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayStatus("5");
+                    queueInfoForUpdate.setIsWaitCancel("");
+                    this.queueInfoService.update(queueInfoForUpdate);
+                } else {
+                    log.info("cancel状态方法-托盘状态不正确:{}", dto.getRobotTaskCode());
+                }
                 break;
             default:
                 log.info("对外开放接口-未知的任务状态:{}", dto.getRobotTaskCode());

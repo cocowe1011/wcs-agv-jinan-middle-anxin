@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 引用Spring Boot的默认配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    
+    <!-- 定义变量，这些可以从application.properties获取 -->
+    <property name="LOG_PATH" value="./logs"/>
+    <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} === [%thread] === %-5level === %logger{50} === - %msg%n"/>
+    
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+    
+    <!-- 文件输出 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/spring.log</file>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/spring-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <immediateFlush>true</immediateFlush>
+        <prudent>true</prudent>
+    </appender>
+    
+    <!-- 使用LMAX Disruptor的高性能异步Appender -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 如果队列的80%已满，则会丢弃TRACE、DEBUG和INFO级别的日志 -->
+        <discardingThreshold>20</discardingThreshold>
+        <!-- 更改默认的队列的深度，该值会影响性能，增加队列深度可以缓解日志阻塞 -->
+        <queueSize>2048</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="FILE"/>
+        <!-- 不包含调用者数据可以提高性能 -->
+        <includeCallerData>false</includeCallerData>
+        <!-- 不阻塞调用者线程 -->
+        <neverBlock>true</neverBlock>
+    </appender>
+    
+    <!-- 异步控制台输出 -->
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>20</discardingThreshold>
+        <queueSize>2048</queueSize>
+        <appender-ref ref="CONSOLE"/>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>true</neverBlock>
+    </appender>
+    
+    <!-- 指定项目中特定包的日志级别 -->
+    <logger name="com.middle.wcs" level="INFO" additivity="false">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+    <logger name="com.middle.wcs.*.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+    
+    <!-- 设置Spring相关日志级别 -->
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </logger>
+    
+    <!-- 根日志级别 -->
+    <root level="INFO">
+        <!-- 使用异步方式输出到控制台 -->
+        <appender-ref ref="ASYNC_CONSOLE"/>
+        <!-- 使用异步方式输出到文件 -->
+        <appender-ref ref="ASYNC_FILE"/>
+    </root>
+</configuration> 
