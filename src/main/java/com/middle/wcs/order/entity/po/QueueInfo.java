@@ -19,7 +19,6 @@ import java.util.Date;
 @TableName("queue_info")
 public class QueueInfo {
     @TableId
-    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -54,6 +53,13 @@ public class QueueInfo {
      * 6-等待一楼AGV取货
      * 7-AGV已在一楼AGV1-1取货，正运往目的地
      */
+    /**
+     * 托盘状态 tray_status 状态
+     * '' 2500车间，说明托盘在来料缓存区进行缓存
+     * 0-在2500来料缓存区等待取货
+     * 1-已在2500来料缓存区取货，正往运往目的地
+     * 2-已送至2500目的地
+     */
     private String trayStatus;
 
     /**
@@ -75,4 +81,19 @@ public class QueueInfo {
      * 是否正在等待取消完成 is_wait_cancel
      */
     private String isWaitCancel;
+
+    /**
+     * 是否已经锁定-2500车间专用字段 is_lock
+     */
+    private String isLock;
+
+    /**
+     * 原订单目的地-2500车间专用字段
+     */
+    private String mudidi;
+
+    /**
+     * 原订单目的地-2500车间专用字段
+     */
+    private Long targetId;
 }

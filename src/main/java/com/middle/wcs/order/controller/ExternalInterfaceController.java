@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,14 @@ import java.util.List;
 
 /**
  * 对外开放接口
- *
+ * {
+ *   "extra": {
+ *     "values": {
+ *       "method": "end"
+ *     }
+ *   },
+ *   "robotTaskCode": "1748017879688"
+ * }
  * @author makejava
  * @since 2024-12-28 23:59:48
  */
@@ -35,6 +43,7 @@ public class ExternalInterfaceController {
     
     @ApiOperation("任务执行过程回馈接口")
     @PostMapping("/robot/reporter/task")
+    @Transactional(rollbackFor = Exception.class)
     public ResponseResult<TaskVO> task(@ApiParam(value = "入参", required = true) @RequestBody RobotTaskRequest dto) {
         log.info("对外开放接口-任务执行过程回馈接口入参：{}", dto);
         // 根据任务编号查询托盘信息
@@ -57,6 +66,11 @@ public class ExternalInterfaceController {
         // 3-在缓存区等待AGV取货
         // 4-已在缓存区取货，正往运往目的地
         // 5-已送至2楼目的地
+
+        // ''-
+        // 0-在2500来料缓存区等待取货
+        // 1-已在2500来料缓存区取货，正往目的地运送
+        // 2-已送至目的地来料缓存区
         QueueInfo queueInfoForUpdate = new QueueInfo();
         queueInfoForUpdate.setId(lqi.get(0).getId());
         switch (dto.getExtra().getValues().getMethod()) {
@@ -65,10 +79,36 @@ public class ExternalInterfaceController {
             case "outbin":
                 // outbin说明AVG已经成功接货，把托盘状态更新
                 if ("0".equals(lqi.get(0).getTrayStatus())) {
-                    // 更新成1-已在2800取货，正往缓存区运送
-                    log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为1:{}", dto.getRobotTaskCode());
-                    queueInfoForUpdate.setTrayStatus("1");
-                    this.queueInfoService.update(queueInfoForUpdate);
+                    if (null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 0) {
+                        // 说明是2500来料缓存区的托盘,需要把现有队列信息清空，把信息移到新的目的地上
+                        queueInfoForUpdate.setTrayInfo("");
+                        queueInfoForUpdate.setTrayStatus("");
+                        queueInfoForUpdate.setRobotTaskCode("");
+                        queueInfoForUpdate.setTrayInfoAdd("");
+                        queueInfoForUpdate.setTargetPosition("");
+                        queueInfoForUpdate.setIsWaitCancel("");
+                        queueInfoForUpdate.setIsLock("");
+                        queueInfoForUpdate.setMudidi("");
+                        queueInfoForUpdate.setTargetId(0L);
+                        this.queueInfoService.update(queueInfoForUpdate);
+                        // 把托盘信息挪到目的地位置上去
+                        QueueInfo queueInfoForUpdateMuDi = new QueueInfo();
+                        queueInfoForUpdateMuDi.setId(lqi.get(0).getTargetId());
+                        queueInfoForUpdateMuDi.setTrayInfo(lqi.get(0).getTrayInfo());
+                        queueInfoForUpdateMuDi.setTrayStatus("1");
+                        queueInfoForUpdateMuDi.setRobotTaskCode(lqi.get(0).getRobotTaskCode());
+                        queueInfoForUpdateMuDi.setTrayInfoAdd(lqi.get(0).getTrayInfoAdd());
+                        queueInfoForUpdateMuDi.setTargetPosition(lqi.get(0).getTargetPosition());
+                        queueInfoForUpdateMuDi.setIsLock("");
+                        queueInfoForUpdateMuDi.setMudidi(lqi.get(0).getMudidi());
+                        this.queueInfoService.update(queueInfoForUpdateMuDi);
+                    } else {
+                        // 说明是2800缓存区的托盘
+                        // 更新成1-已在2800取货，正往缓存区运送
+                        log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为1:{}", dto.getRobotTaskCode());
+                        queueInfoForUpdate.setTrayStatus("1");
+                        this.queueInfoService.update(queueInfoForUpdate);
+                    }
                 } else if("3".equals(lqi.get(0).getTrayStatus())) {
                     // 4-已在缓存区取货，正往运往目的地
                     log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为4:{}", dto.getRobotTaskCode());
@@ -109,6 +149,9 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayInfoAdd("");
                     queueInfoForUpdate.setTargetPosition("");
                     queueInfoForUpdate.setIsWaitCancel("");
+                    queueInfoForUpdate.setIsLock("");
+                    queueInfoForUpdate.setMudidi("");
+                    queueInfoForUpdate.setTargetId(0L);
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else if("3".equals(lqi.get(0).getTrayStatus()) || "4".equals(lqi.get(0).getTrayStatus())) {
                     // 说明在缓存区取货后取消了，把托盘状态更新为2-已送至2楼缓存区
