@@ -67,10 +67,13 @@ public class ExternalInterfaceController {
         // 4-已在缓存区取货，正往运往目的地
         // 5-已送至2楼目的地
 
-        // ''-
-        // 0-在2500来料缓存区等待取货
-        // 1-已在2500来料缓存区取货，正往目的地运送
-        // 2-已送至目的地来料缓存区
+        // ''-2500车间，说明托盘在来料缓存区进行缓存
+        // 0- 在AGV5-1等待取货
+        //  1- 已在AGV5-1取货，正运往来料缓存区
+        //  2- 已送至来料缓存区
+        //  3- 在来料缓存区等待取货
+        //  4- 已在来料缓存区取货
+        //  5- 已送至目的地终点
         QueueInfo queueInfoForUpdate = new QueueInfo();
         queueInfoForUpdate.setId(lqi.get(0).getId());
         switch (dto.getExtra().getValues().getMethod()) {
@@ -79,6 +82,13 @@ public class ExternalInterfaceController {
             case "outbin":
                 // outbin说明AVG已经成功接货，把托盘状态更新
                 if ("0".equals(lqi.get(0).getTrayStatus())) {
+                    // 说明是2800缓存区的托盘
+                    // 更新成1-已在2800取货，正往缓存区运送
+                    log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为1:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayStatus("1");
+                    this.queueInfoService.update(queueInfoForUpdate);
+                } else if("3".equals(lqi.get(0).getTrayStatus())) {
+                    // 4-已在缓存区取货，正往运往目的地
                     if (null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 0) {
                         // 说明是2500来料缓存区的托盘,需要把现有队列信息清空，把信息移到新的目的地上
                         queueInfoForUpdate.setTrayInfo("");
@@ -95,25 +105,20 @@ public class ExternalInterfaceController {
                         QueueInfo queueInfoForUpdateMuDi = new QueueInfo();
                         queueInfoForUpdateMuDi.setId(lqi.get(0).getTargetId());
                         queueInfoForUpdateMuDi.setTrayInfo(lqi.get(0).getTrayInfo());
-                        queueInfoForUpdateMuDi.setTrayStatus("1");
+                        queueInfoForUpdateMuDi.setTrayStatus("4");
                         queueInfoForUpdateMuDi.setRobotTaskCode(lqi.get(0).getRobotTaskCode());
                         queueInfoForUpdateMuDi.setTrayInfoAdd(lqi.get(0).getTrayInfoAdd());
                         queueInfoForUpdateMuDi.setTargetPosition(lqi.get(0).getTargetPosition());
                         queueInfoForUpdateMuDi.setIsLock("");
                         queueInfoForUpdateMuDi.setMudidi(lqi.get(0).getMudidi());
+                        // 把当前出发位置的id存进去，防止任务取消，回更回来
+                        queueInfoForUpdateMuDi.setTargetId(lqi.get(0).getId());
                         this.queueInfoService.update(queueInfoForUpdateMuDi);
                     } else {
-                        // 说明是2800缓存区的托盘
-                        // 更新成1-已在2800取货，正往缓存区运送
-                        log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为1:{}", dto.getRobotTaskCode());
-                        queueInfoForUpdate.setTrayStatus("1");
+                        log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为4:{}", dto.getRobotTaskCode());
+                        queueInfoForUpdate.setTrayStatus("4");
                         this.queueInfoService.update(queueInfoForUpdate);
                     }
-                } else if("3".equals(lqi.get(0).getTrayStatus())) {
-                    // 4-已在缓存区取货，正往运往目的地
-                    log.info("对外开放接口-任务执行过程回馈接口更新托盘状态为4:{}", dto.getRobotTaskCode());
-                    queueInfoForUpdate.setTrayStatus("4");
-                    this.queueInfoService.update(queueInfoForUpdate);
                 } else if("6".equals(lqi.get(0).getTrayStatus())) {
                     log.info("对外开放接口-一楼AGV小车已经取到货物，更新托盘状态为7:{}", dto.getRobotTaskCode());
                     queueInfoForUpdate.setTrayStatus("7");
@@ -154,11 +159,39 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTargetId(0L);
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else if("3".equals(lqi.get(0).getTrayStatus()) || "4".equals(lqi.get(0).getTrayStatus())) {
-                    // 说明在缓存区取货后取消了，把托盘状态更新为2-已送至2楼缓存区
-                    log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为2:{}", dto.getRobotTaskCode());
-                    queueInfoForUpdate.setTrayStatus("2");
-                    queueInfoForUpdate.setIsWaitCancel("");
-                    this.queueInfoService.update(queueInfoForUpdate);
+                    // 2500车间的4状态的取消有一些特殊
+                    if ("4".equals(lqi.get(0).getTrayStatus()) && null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 0) {
+                        // 需要把状态再更新回去
+                        // 先把当前位置信息给清除掉
+                        queueInfoForUpdate.setTrayInfo("");
+                        queueInfoForUpdate.setTrayStatus("");
+                        queueInfoForUpdate.setRobotTaskCode("");
+                        queueInfoForUpdate.setTrayInfoAdd("");
+                        queueInfoForUpdate.setTargetPosition("");
+                        queueInfoForUpdate.setIsWaitCancel("");
+                        queueInfoForUpdate.setIsLock("");
+                        queueInfoForUpdate.setMudidi("");
+                        queueInfoForUpdate.setTargetId(0L);
+                        this.queueInfoService.update(queueInfoForUpdate);
+                        // 再把托盘信息恢复回托盘缓存区
+                        QueueInfo queueInfoForUpdateMuDi = new QueueInfo();
+                        queueInfoForUpdateMuDi.setId(lqi.get(0).getTargetId());
+                        queueInfoForUpdateMuDi.setTrayInfo(lqi.get(0).getTrayInfo());
+                        queueInfoForUpdateMuDi.setTrayStatus("2");
+                        queueInfoForUpdateMuDi.setRobotTaskCode(lqi.get(0).getRobotTaskCode());
+                        queueInfoForUpdateMuDi.setTrayInfoAdd(lqi.get(0).getTrayInfoAdd());
+                        queueInfoForUpdateMuDi.setTargetPosition(lqi.get(0).getTargetPosition());
+                        queueInfoForUpdateMuDi.setIsLock("1");
+                        queueInfoForUpdateMuDi.setMudidi(lqi.get(0).getMudidi());
+                        queueInfoForUpdateMuDi.setTargetId(lqi.get(0).getTargetId());
+                        this.queueInfoService.update(queueInfoForUpdateMuDi);
+                    } else{
+                        // 说明在缓存区取货后取消了，把托盘状态更新为2-已送至2楼缓存区
+                        log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为2:{}", dto.getRobotTaskCode());
+                        queueInfoForUpdate.setTrayStatus("2");
+                        queueInfoForUpdate.setIsWaitCancel("");
+                        this.queueInfoService.update(queueInfoForUpdate);
+                    }
                 } else if ("6".equals(lqi.get(0).getTrayStatus()) || "7".equals(lqi.get(0).getTrayStatus())) {
                     // 说明在一楼AGV取货后取消了，把托盘状态更新为2-已送至2楼缓存区
                     log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为5:{}", dto.getRobotTaskCode());
