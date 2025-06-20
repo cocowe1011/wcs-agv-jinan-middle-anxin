@@ -190,6 +190,9 @@ public class ExternalInterfaceController {
                         log.info("对外开放接口-任务执行过程回馈接口收到取消命令，更新托盘状态为2:{}", dto.getRobotTaskCode());
                         queueInfoForUpdate.setTrayStatus("2");
                         queueInfoForUpdate.setIsWaitCancel("");
+                        if (null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 0) {
+                            queueInfoForUpdate.setIsLock("1");
+                        }
                         this.queueInfoService.update(queueInfoForUpdate);
                     }
                 } else if ("6".equals(lqi.get(0).getTrayStatus()) || "7".equals(lqi.get(0).getTrayStatus())) {
