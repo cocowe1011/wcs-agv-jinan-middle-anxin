@@ -71,9 +71,9 @@ public class QueueInfoController {
      * @param  dto
      */
     @ApiOperation("更新")
-    @PostMapping("/updateAgv22")
-    public ResponseResult<Integer> updateAgv22(@ApiParam(value = "信息",required = true) @RequestBody QueueInfo dto) {
-        return ResponseResult.success(this.queueInfoService.updateAgv22(dto));
+    @PostMapping("/updateAgvQueue")
+    public ResponseResult<Integer> updateAgvQueue(@ApiParam(value = "信息",required = true) @RequestBody QueueInfo dto) {
+        return ResponseResult.success(this.queueInfoService.updateAgvQueue(dto));
     }
 
     /**

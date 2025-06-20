@@ -38,7 +38,7 @@ public interface QueueInfoService {
      * @param dto 实例对象
      * @return 成功为1，失败为0
      */
-    int updateAgv22(QueueInfo dto);
+    int updateAgvQueue(QueueInfo dto);
 
     int delete(QueueInfo dto);
 

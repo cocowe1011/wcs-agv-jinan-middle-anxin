@@ -55,7 +55,7 @@ public class QueueInfoServiceImpl implements QueueInfoService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int updateAgv22(QueueInfo dto) {
+    public int updateAgvQueue(QueueInfo dto) {
         // 1、先把当前队列信息清空
         QueueInfo queueInfo = new QueueInfo();
         queueInfo.setId(dto.getId());
@@ -70,7 +70,7 @@ public class QueueInfoServiceImpl implements QueueInfoService {
         }
         // 2、插入队列信息
         QueueInfo queueInfoForInsert = new QueueInfo();
-        queueInfoForInsert.setQueueName("AGV2-2");
+        queueInfoForInsert.setQueueName(dto.getQueueName());
         queueInfoForInsert.setTrayInfo(dto.getTrayInfo());
         queueInfoForInsert.setTrayStatus(dto.getTrayStatus());
         queueInfoForInsert.setRobotTaskCode(dto.getRobotTaskCode());
