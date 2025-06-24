@@ -1,5 +1,6 @@
 package com.middle.wcs.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.middle.wcs.hander.BusinessException;
 import com.middle.wcs.hander.CommonErrorCode;
 import com.middle.wcs.user.entity.UserInfo;
@@ -8,6 +9,7 @@ import com.middle.wcs.user.service.UserInfoService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,6 +31,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         if(entity.size() > 0) {
             throw BusinessException.build(CommonErrorCode.DUPLICATE_USER_CODE);
         }
+        // 设置默认值
+        userInfo.setUserRole("OPERATOR"); // 新注册的都是操作员
+        userInfo.setLoginFailCount(0);
+        userInfo.setIsLocked(0);
+        userInfo.setCreateTime(new Date());
+        userInfo.setUpdateTime(new Date());
         return userInfoMapper.insert(userInfo);
     }
 
@@ -56,5 +64,39 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw BusinessException.build(CommonErrorCode.NOT_EXITS_USER_CODE);
         }
         return userInfo.getUserPassword().equals(entity.get(0).getUserPassword());
+    }
+    
+    @Override
+    public List<UserInfo> getAllOperators() {
+        return userInfoMapper.selectAllUsers();
+    }
+    
+    @Override
+    public Integer unlockUser(Long userId) {
+        return userInfoMapper.unlockUser(userId);
+    }
+    
+    @Override
+    public Integer lockUser(Long userId) {
+        return userInfoMapper.lockUser(userId);
+    }
+    
+    @Override
+    public Integer deleteUser(Long userId) {
+        Integer result = userInfoMapper.deleteUser(userId);
+        if (result == 0) {
+            throw BusinessException.build(CommonErrorCode.NOT_EXITS_USER_CODE);
+        }
+        return result;
+    }
+    
+    @Override
+    public Integer resetPassword(Long userId, String newPassword) {
+        UserInfo userInfo = userInfoMapper.selectById(userId);
+        if (userInfo == null) {
+            throw BusinessException.build(CommonErrorCode.NOT_EXITS_USER_CODE);
+        }
+        userInfo.setUserPassword(newPassword);
+        return userInfoMapper.updatePassword(userInfo);
     }
 }

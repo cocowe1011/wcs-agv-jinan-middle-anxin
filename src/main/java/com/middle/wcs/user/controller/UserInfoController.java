@@ -6,6 +6,8 @@ import com.middle.wcs.user.service.UserInfoService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -21,9 +23,65 @@ public class UserInfoController {
     @Resource
     private UserInfoService userInfoService;
 
-    @PostMapping("/save")
-    public ResponseResult<Integer> save (@RequestBody UserInfo userInfo) {
+    /**
+     * 注册操作员账号（仅管理员可用）
+     * @param userInfo 用户信息
+     * @return 注册结果
+     */
+    @PostMapping("/registerOperator")
+    public ResponseResult<Integer> registerOperator (@RequestBody UserInfo userInfo) {
         return  ResponseResult.success(userInfoService.save(userInfo));
+    }
+    
+    /**
+     * 获取所有操作员列表（仅管理员可用）
+     * @return 操作员列表
+     */
+    @GetMapping("/getOperatorList")
+    public ResponseResult<List<UserInfo>> getOperatorList() {
+        return ResponseResult.success(userInfoService.getAllOperators());
+    }
+    
+    /**
+     * 解锁用户（仅管理员可用）
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    @PostMapping("/unlockUser/{userId}")
+    public ResponseResult<Integer> unlockUser(@PathVariable Long userId) {
+        return ResponseResult.success(userInfoService.unlockUser(userId));
+    }
+    
+    /**
+     * 锁定用户（仅管理员可用）
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    @PostMapping("/lockUser/{userId}")
+    public ResponseResult<Integer> lockUser(@PathVariable Long userId) {
+        return ResponseResult.success(userInfoService.lockUser(userId));
+    }
+    
+    /**
+     * 删除用户（仅管理员可用）
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    @DeleteMapping("/deleteUser/{userId}")
+    public ResponseResult<Integer> deleteUser(@PathVariable Long userId) {
+        return ResponseResult.success(userInfoService.deleteUser(userId));
+    }
+    
+    /**
+     * 重置用户密码（仅管理员可用）
+     * @param params 包含userId和newPassword
+     * @return 操作结果
+     */
+    @PostMapping("/resetPassword")
+    public ResponseResult<Integer> resetPassword(@RequestBody Map<String, Object> params) {
+        Long userId = Long.parseLong(params.get("userId").toString());
+        String newPassword = params.get("newPassword").toString();
+        return ResponseResult.success(userInfoService.resetPassword(userId, newPassword));
     }
 
     @PostMapping("/verifyName")

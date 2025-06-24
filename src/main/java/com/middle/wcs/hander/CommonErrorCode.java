@@ -27,6 +27,18 @@ public enum CommonErrorCode implements IErrorCode {
      * 密码错误
      */
     PASSWORD_ERROR("0003", "密码错误！"),
+    /**
+     * 账号已被锁定
+     */
+    ACCOUNT_LOCKED("0004", "账号已被锁定，请联系管理员解锁"),
+    /**
+     * 密码错误次数限制
+     */
+    PASSWORD_ERROR_LIMIT("0005", "用户名或密码错误，您还有$1次尝试机会，3次错误后账号将被锁定"),
+    /**
+     * 密码错误次数过多
+     */
+    PASSWORD_ERROR_TOO_MANY("0006", "密码错误次数过多，您的账号已被锁定，请联系管理员解锁"),
     ;
     private String code;
     private String msg;

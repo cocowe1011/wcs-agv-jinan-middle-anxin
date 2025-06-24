@@ -21,4 +21,9 @@ public class LoginDTO {
     */    
     private String userPassword;
     
+    /**
+     * 用户角色
+     */
+    private String userRole;
+    
 }

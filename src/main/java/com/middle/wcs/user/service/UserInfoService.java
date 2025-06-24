@@ -1,6 +1,7 @@
 package com.middle.wcs.user.service;
 
 import com.middle.wcs.user.entity.UserInfo;
+import java.util.List;
 
 /**
  * @classDesc: 业务接口:(UserInfo)
@@ -17,4 +18,39 @@ public interface UserInfoService {
     Integer updatePassword(UserInfo userInfo);
 
     Boolean verifyPassword(UserInfo userInfo);
+    
+    /**
+     * 获取所有操作员列表
+     * @return 操作员列表
+     */
+    List<UserInfo> getAllOperators();
+    
+    /**
+     * 解锁用户
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    Integer unlockUser(Long userId);
+    
+    /**
+     * 锁定用户
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    Integer lockUser(Long userId);
+    
+    /**
+     * 删除用户
+     * @param userId 用户ID
+     * @return 操作结果
+     */
+    Integer deleteUser(Long userId);
+    
+    /**
+     * 重置用户密码
+     * @param userId 用户ID
+     * @param newPassword 新密码
+     * @return 操作结果
+     */
+    Integer resetPassword(Long userId, String newPassword);
 }

@@ -8,7 +8,9 @@ import com.middle.wcs.login.service.LoginService;
 import com.middle.wcs.user.dao.UserInfoMapper;
 import com.middle.wcs.user.entity.UserInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,6 +29,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Resource
     private UserInfoMapper userInfoMapper;
+    
+    @Autowired
+    private LoginFailCountService loginFailCountService;
 
     /**
      * 登录
@@ -34,6 +39,7 @@ public class LoginServiceImpl implements LoginService {
      * @return 登录出参
      */
     @Override
+    @Transactional
     public UserInfo login(LoginDTO loginDTO) {
         UserInfo userInfo = new UserInfo();
         userInfo.setUserCode(loginDTO.getUserCode());
@@ -42,10 +48,36 @@ public class LoginServiceImpl implements LoginService {
         if(entity.size() != 1) {
             throw BusinessException.build(CommonErrorCode.NOT_EXITS_USER_CODE);
         }
-        // 验证密码是否正确 PASSWORD_ERROR
-        if(!(null != loginDTO.getUserPassword() && loginDTO.getUserPassword().equals(entity.get(0).getUserPassword()))) {
-            throw BusinessException.build(CommonErrorCode.PASSWORD_ERROR);
+        
+        UserInfo user = entity.get(0);
+        
+        // 检查账号是否被锁定
+        if (user.getIsLocked() != null && user.getIsLocked() == 1) {
+            throw BusinessException.build(CommonErrorCode.ACCOUNT_LOCKED);
         }
-        return entity.get(0);
+        
+        // 验证密码是否正确
+        if(!(null != loginDTO.getUserPassword() && loginDTO.getUserPassword().equals(user.getUserPassword()))) {
+            // 如果是操作员，增加登录失败次数
+            if ("OPERATOR".equals(user.getUserRole())) {
+                // 使用独立的Service更新失败次数，避免回滚
+                int remainingChances = loginFailCountService.updateLoginFailCount(user.getUserCode());
+                if (remainingChances <= 0) {
+                    throw BusinessException.build(CommonErrorCode.PASSWORD_ERROR_TOO_MANY);
+                } else {
+                    throw BusinessException.build(CommonErrorCode.PASSWORD_ERROR_LIMIT, String.valueOf(remainingChances));
+                }
+            } else {
+                // 管理员不限制登录次数
+                throw BusinessException.build(CommonErrorCode.PASSWORD_ERROR);
+            }
+        }
+        
+        // 登录成功，重置失败次数
+        if (user.getLoginFailCount() != null && user.getLoginFailCount() > 0) {
+            loginFailCountService.resetLoginFailCount(user.getUserCode());
+        }
+        
+        return user;
     }
 }
