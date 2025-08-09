@@ -92,8 +92,8 @@ public class ExternalInterfaceController {
                     this.queueInfoService.update(queueInfoForUpdate);
                 } else if("3".equals(lqi.get(0).getTrayStatus())) {
                     // 4-已在缓存区取货，正往运往目的地
-                    if (null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 0) {
-                        // 说明是2500来料缓存区的托盘,需要把现有队列信息清空，把信息移到新的目的地上
+                    if (null != lqi.get(0).getTargetId() && lqi.get(0).getTargetId() > 300) {
+                        // getTargetId() > 300说明是2500来料缓存区的托盘,需要把现有队列信息清空，把信息移到新的目的地上
                         queueInfoForUpdate.setTrayInfo("");
                         queueInfoForUpdate.setTrayStatus("");
                         queueInfoForUpdate.setRobotTaskCode("");
