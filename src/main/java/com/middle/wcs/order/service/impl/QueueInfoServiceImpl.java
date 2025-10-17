@@ -36,10 +36,20 @@ public class QueueInfoServiceImpl implements QueueInfoService {
 
     @Override
     public List<QueueInfo> queryQueueList(QueueInfo dto) {
-        QueryWrapper<QueueInfo> wrapper= new QueryWrapper<>(dto);
+        QueryWrapper<QueueInfo> wrapper = new QueryWrapper<>(dto);
         // 根据字段id进行排序
         wrapper.orderByAsc("id");
-        return queueInfoMapper.selectList(wrapper);
+        
+        List<QueueInfo> result = queueInfoMapper.selectList(wrapper);
+        
+        // 如果传入了queueName，进行精确过滤（区分大小写）
+        if (dto.getQueueName() != null && !dto.getQueueName().trim().isEmpty()) {
+            result = result.stream()
+                    .filter(item -> dto.getQueueName().equals(item.getQueueName()))
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        
+        return result;
     }
 
     @Override
