@@ -177,7 +177,6 @@ public class ExternalInterfaceController {
                     queueInfoForUpdate.setTrayInfoAdd("");
                     queueInfoForUpdate.setTargetPosition("");
                     queueInfoForUpdate.setIsWaitCancel("");
-                    queueInfoForUpdate.setIsLock("");
                     queueInfoForUpdate.setMudidi("");
                     queueInfoForUpdate.setTargetId(0L);
                     this.queueInfoService.update(queueInfoForUpdate);
@@ -190,7 +189,6 @@ public class ExternalInterfaceController {
                     queueInfoForUpdateMuDi.setRobotTaskCode(lqi.get(0).getRobotTaskCode());
                     queueInfoForUpdateMuDi.setTrayInfoAdd(lqi.get(0).getTrayInfoAdd());
                     queueInfoForUpdateMuDi.setTargetPosition(lqi.get(0).getTargetPosition());
-                    queueInfoForUpdateMuDi.setIsLock("");
                     // 把当前出发位置的id存进去，防止任务取消，回更回来
                     queueInfoForUpdateMuDi.setTargetId(lqi.get(0).getId());
                     this.queueInfoService.update(queueInfoForUpdateMuDi);
