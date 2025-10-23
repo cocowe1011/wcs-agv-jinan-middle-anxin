@@ -478,9 +478,9 @@ public class ExternalInterfaceController {
                         this.queueInfoService.update(queueInfoForUpdateSource);
                     }
                 } else if("16".equals(lqi.get(0).getTrayStatus())) {
-                    // 空托盘区集满：16-在空托盘区等待AGV取货 -> 恢复为15-集满状态
-                    log.info("对外开放接口-空托盘区转运任务取消（状态16），恢复托盘状态为15:{}", dto.getRobotTaskCode());
-                    queueInfoForUpdate.setTrayStatus("15");
+                    // 空托盘区集满：16-在空托盘区等待AGV取货 -> 恢复为14-已给PLC发送完成命令
+                    log.info("对外开放接口-空托盘区转运任务取消（状态16），恢复托盘状态为14:{}", dto.getRobotTaskCode());
+                    queueInfoForUpdate.setTrayStatus("14");
                     queueInfoForUpdate.setTargetId(0L);
                     queueInfoForUpdate.setRobotTaskCode("");
                     queueInfoForUpdate.setTargetPosition("");
