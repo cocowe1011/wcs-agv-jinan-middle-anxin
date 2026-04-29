@@ -24,7 +24,7 @@ public class UserInfoController {
     private UserInfoService userInfoService;
 
     /**
-     * 注册操作员账号（仅管理员可用）
+     * 注册账号（仅管理员可用）
      * @param userInfo 用户信息
      * @return 注册结果
      */
@@ -34,8 +34,8 @@ public class UserInfoController {
     }
     
     /**
-     * 获取所有操作员列表（仅管理员可用）
-     * @return 操作员列表
+     * 获取所有用户列表（仅管理员可用）
+     * @return 用户列表
      */
     @GetMapping("/getOperatorList")
     public ResponseResult<List<UserInfo>> getOperatorList() {
@@ -97,5 +97,15 @@ public class UserInfoController {
     @PostMapping("/verifyPassword")
     public ResponseResult<Boolean> verifyPassword (@RequestBody UserInfo userInfo) {
         return  ResponseResult.success(userInfoService.verifyPassword(userInfo));
+    }
+
+    /**
+     * 更新用户信息（仅管理员可用）
+     * @param userInfo 用户信息
+     * @return 操作结果
+     */
+    @PostMapping("/updateUserInfo")
+    public ResponseResult<Integer> updateUserInfo(@RequestBody UserInfo userInfo) {
+        return ResponseResult.success(userInfoService.updateUserInfo(userInfo));
     }
 }

@@ -31,3 +31,13 @@ END
 
 -- 8. 更新现有用户为操作员角色
 UPDATE user_info SET user_role = 'OPERATOR' WHERE user_code != 'admin' AND user_role IS NULL;
+
+-- 9. 添加密码最后修改时间字段
+ALTER TABLE user_info ADD password_change_time DATETIME NULL;
+GO
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'密码最后修改时间', @level0type=N'SCHEMA', @level0name=N'dbo', @level1type=N'TABLE', @level1name=N'user_info', @level2type=N'COLUMN', @level2name=N'password_change_time';
+GO
+
+-- 10. 初始化现有用户的密码修改时间为更新时间（如果没有update_time则用create_time）
+UPDATE user_info SET password_change_time = ISNULL(update_time, create_time) WHERE password_change_time IS NULL;
+GO

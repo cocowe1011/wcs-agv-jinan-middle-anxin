@@ -41,6 +41,11 @@ public enum CommonErrorCode implements IErrorCode {
     PASSWORD_ERROR_TOO_MANY("0006", "密码错误次数过多，您的账号已被锁定，请联系管理员解锁"),
     
     /**
+     * 不允许删除管理员账号
+     */
+    CANNOT_DELETE_ADMIN("0007", "不允许删除管理员账号！"),
+    
+    /**
      * 文件上传相关错误码
      */
     FILE_EMPTY("0101", "上传的文件不能为空"),
