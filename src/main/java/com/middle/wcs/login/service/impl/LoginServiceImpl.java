@@ -92,6 +92,10 @@ public class LoginServiceImpl implements LoginService {
      * @return true-已过期，false-未过期
      */
     private boolean isPasswordExpired(UserInfo user) {
+        // admin账号不强制改密
+        if ("admin".equalsIgnoreCase(user.getUserCode())) {
+            return false;
+        }
         Date changeTime = user.getPasswordChangeTime();
         // 如果从未修改过密码（旧数据），视为已过期
         if (changeTime == null) {
